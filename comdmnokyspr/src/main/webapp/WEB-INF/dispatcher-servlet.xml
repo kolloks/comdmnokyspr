@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!-- Разрешаем использование аннотаций Spring MVC (то есть @Controller и.т.д) -->
+    <mvc:annotation-driven/>
+    <tx:annotation-driven/>
+    <context:component-scan base-package="com.dmnoky.prd.controller" />
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/pages/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
+          p:basename="classpath:validation" p:defaultEncoding="UTF-8"/>
+
+    <bean id="productDao" class="com.dmnoky.prd.dao.ProductDAOImpl">
+        <property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory"/>
+    </bean>
+    <bean id="userDao" class="com.dmnoky.prd.dao.UserDAOImpl">
+        <property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory"/>
+    </bean>
+    <bean id="authorityDao" class="com.dmnoky.prd.dao.AuthorityDAOImpl">
+        <property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory"/>
+    </bean>
+
+    <bean id="productService" class="com.dmnoky.prd.service.ProductServiceImpl">
+        <property name="productDAO" ref="productDao"/>
+    </bean>
+    <bean id="userService" class="com.dmnoky.prd.service.UserServiceImpl">
+        <property name="userDAO" ref="userDao"/>
+        <property name="bCryptPasswordEncoder" ref="encoder"/>
+    </bean>
+    <bean id="authorityService" class="com.dmnoky.prd.service.AuthorityServiceImpl">
+        <property name="authorityDAO" ref="authorityDao"/>
+    </bean>
+
+    <bean id="userValidator" class="com.dmnoky.prd.validator.UserValidator">
+        <property name="userService" ref="userService"/>
+    </bean>
+</beans>
